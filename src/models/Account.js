@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const manageExternalId = require("../plugins/manageExternalId");
-const softDeletePlugin = require("../plugins/softDelete");
+const manageExternalId = require("../plugins/manageExtenalId");
 
 const accountSchema = new Schema(
   {
@@ -29,11 +28,6 @@ const accountSchema = new Schema(
       min: 5,
       max: 61,
     },
-    avatar: {
-      type: String,
-      required: false,
-      default: null,
-    },
     state: {
       type: String,
       maxLength: 30,
@@ -47,6 +41,11 @@ const accountSchema = new Schema(
     tokenExpiresAt: {
       type: Date,
       required: false,
+    },
+    rol: {
+      type: Schema.Types.ObjectId,
+      ref: "Rol",
+      required: true,
     },
   },
   {

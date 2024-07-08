@@ -1,4 +1,3 @@
-const { isValidObjectId } = require("mongoose");
 const Cuenta = require("../models/Account");
 const { hashPassword } = require("../helpers/hashPassword");
 const uuidv4 = require("uuid").v4;

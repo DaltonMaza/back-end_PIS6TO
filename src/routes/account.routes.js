@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-var cuentaController = require("../controllers/cuentaController");
+var cuentaController = require("../controllers/accountController");
 const isLoggedIn = require("../policies/isLoggedIn");
 const {
   createAccountSchema,

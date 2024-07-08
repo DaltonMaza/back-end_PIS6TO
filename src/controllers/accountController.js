@@ -1,12 +1,12 @@
-const cuentaService = require("../services/cuentaService");
+const cuentaService = require("../services/accountService");
 const Cuenta = require("../models/Account");
 const { hashPassword } = require("../helpers/hashPassword");
+const Role = require("../models/Role");
 const uuidv4 = require("uuid").v4;
 
 module.exports = {
   getAllAcounts: async (req, res) => {
     const { skip = 0, limit = 10, ...where } = req.query;
-    // console.log(where);
     const allAccounts = await Cuenta.find(where).skip(skip).limit(limit);
     where.deletedAt = null;
     const numberAccounts = await Cuenta.countDocuments(where);
@@ -48,9 +48,19 @@ module.exports = {
       return res.json({ status: 400, message: "La cuenta ya existe" });
     }
 
-    const cuenta = await Cuenta.create({
-      ...req.body,
-    });
+    var cuenta;
+
+    if (req.body.rol != null) {
+      cuenta = await Cuenta.create({
+        ...req.body,
+      });
+    }else{
+      const rolUsuario = Role.findOne({ name: "Usuario" });
+      console.log(rolUsuario); //que info devuelve?
+      // req.body.rol = rolUsuario;
+    }
+
+
     return res.json(cuenta);
   },
 
