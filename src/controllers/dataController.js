@@ -2,6 +2,7 @@ const Data = require("../models/Data");
 module.exports = {
     createData : async (req, res) => {
         try {
+          console.log(req)
           const Data = new Data(req.body);
           await Data.save();
           res.status(201).send(Data);
@@ -13,6 +14,7 @@ module.exports = {
       getAllData : async (req, res) => {
         try {
           const Data = await Data.find();
+          console.log(Data)
           res.status(200).send(Data);
         } catch (error) {
           res.status(500).send(error);
