@@ -18,6 +18,17 @@ const createDataSchema = Joi.object({
   }),
 });
 
+const exportDataSchema = Joi.object({
+  startDate: Joi.date().iso().required().messages({
+    "date.base": "El campo startDate debe ser una fecha válida en formato ISO 8601",
+    "any.required": "El campo startDate es requerido",
+  }),
+  endDate: Joi.date().iso().required().messages({
+    "date.base": "El campo endDate debe ser una fecha válida en formato ISO 8601",
+    "any.required": "El campo endDate es requerido",
+  })
+});
+
 const editDataSchema = Joi.object({
   id: Joi.string().optional().custom((value, helpers) => {
     if (!isValidObjectId(value)) {
@@ -40,4 +51,4 @@ const editDataSchema = Joi.object({
   }),
 });
 
-module.exports = { createDataSchema, editDataSchema };
+module.exports = { createDataSchema, editDataSchema, exportDataSchema };

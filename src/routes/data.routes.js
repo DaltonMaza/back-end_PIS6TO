@@ -35,6 +35,18 @@ router.post(
 );
 
 /**
+ * @route POST /
+ * @desc Exportar datos del sensor a un archivo xlxs
+ * @access Public
+ */
+router.post(
+  "/export",
+  //middleware.validateRequestBody(editDataSchema),
+  DataController.exportDataToExcel
+);
+
+
+/**
  * @route PUT /:external
  * @desc Actualizar datos del sensor por external_id
  * @access Public

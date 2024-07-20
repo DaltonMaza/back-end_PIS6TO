@@ -1,4 +1,6 @@
 const Data = require("../models/Data");
+const XLSX = require("xlsx");
+const fs = require("fs");
 
 module.exports = {
   createData: async (req, res) => {
@@ -59,6 +61,44 @@ module.exports = {
       res.status(200).send(dataInstance);
     } catch (error) {
       res.status(500).send({ error: error.message }); // Enviar error como objeto JSON
+    }
+  },
+  exportDataToExcel: async (req, res) => {
+    try {
+      const { startDate, endDate } = req.body;
+      const data = await Data.find({
+        timestamp: { $gte: new Date(startDate), $lte: new Date(endDate) }
+      });
+
+      if (!data.length) {
+        return res.status(404).send({ error: "No data found for the given date range" });
+      }
+
+      const jsonData = data.map(doc => ({
+        humidity: doc.humidity,
+        temperature: doc.temperature,
+        timestamp: doc.timestamp
+      }));
+      
+      const worksheet = XLSX.utils.json_to_sheet(jsonData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+
+      const filePath = `./data_export_${Date.now()}.xlsx`;
+      XLSX.writeFile(workbook, filePath);
+
+      res.download(filePath, (err) => {
+        if (err) {
+          console.log(err);
+          res.status(500).send({ error: "Error downloading the file" });
+        }
+
+        // Remove the file after sending the response
+        fs.unlinkSync(filePath);
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({ error: error.message });
     }
   }
 };
