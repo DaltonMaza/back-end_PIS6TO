@@ -18,6 +18,7 @@ const getCuentaByExternalId = async (external_id) => {
 };
 
 const createCuenta = async ({ password, ...newUser }) => {
+  console.log(password, newUser);
   const cuentaExist = await Cuenta.findOne({ email: newUser.email });
   const hashedPassword = await hashPassword(password);
   newUser.password = hashedPassword;

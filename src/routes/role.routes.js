@@ -1,6 +1,8 @@
 const { Router } = require("express");
 const isLoggedIn = require("../policies/isLoggedIn");
 const rolController = require("../controllers/roleController");
+const { createRoleSchema } = require("../validationSchemas/role");
+const middleware = require("../middlewares");
 
 const rolRouter = Router();
 
@@ -28,7 +30,8 @@ rolRouter.get(
  */
 rolRouter.post(
     "/",
-    isLoggedIn,
+    // isLoggedIn,
+    middleware.validateRequestBody(createRoleSchema),
     rolController.createRole
 );
 
