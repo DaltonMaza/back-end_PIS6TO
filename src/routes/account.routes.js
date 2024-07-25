@@ -14,7 +14,10 @@ const middleware = require("../middlewares");
  *  @access Logged
  */
 
-router.get("/", isLoggedIn, cuentaController.getAllAcounts);
+router.get("/", 
+  // isLoggedIn, 
+  cuentaController.getAllAcounts
+);
 
 /**
  * @route GET /:id
@@ -55,6 +58,9 @@ router.put(
  * @desc Bloquear usuario por id
  * @access Logged
  */
-router.delete("/:external", isLoggedIn, cuentaController.deleteCuenta);
+router.delete("/:external", 
+  isLoggedIn,
+  cuentaController.deleteCuenta
+);
 
 module.exports = router;
