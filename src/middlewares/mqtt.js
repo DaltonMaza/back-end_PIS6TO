@@ -1,7 +1,7 @@
 const mqtt = require('mqtt');
 const mongoose = require('mongoose');
-const Data = require('../models/Datos'); // Asegúrate de que la ruta al modelo sea correcta
-const Node = require('../models/Node'); // Asegúrate de que la ruta al modelo sea correcta
+const Data = require('../models/Datos'); 
+const Node = require('../models/Node'); 
 const dataController = require('../controllers/datosController');
 
 const mqttBrokerUrl = 'mqtt://172.168.129.50';
@@ -33,8 +33,9 @@ mqttClient.on('message', async (topic, message) => {
   console.log(`Mensaje recibido en el canal ${topic}: ${message.toString()}`);
 
   try {
-    const data = JSON.parse(message.toString());
+    let data = JSON.parse(message.toString());
     if (topic === topicDatos) {
+      // No convertir el timestamp, mantenerlo tal como llega
       // Agregar external_id si es necesario y no está presente
       if (!data.external_id) {
         data.external_id = new mongoose.Types.ObjectId().toString();
@@ -55,4 +56,3 @@ mqttClient.on('message', async (topic, message) => {
     console.error('Error al procesar o guardar el mensaje:', error);
   }
 });
-
