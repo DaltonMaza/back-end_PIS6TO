@@ -7,6 +7,7 @@ var logger = require('morgan');
 var routes = require('./src/routes/index.js');
 
 const connectDB = require('./src/bd/index.js');
+const cors = require('cors');
 
 connectDB();
 
@@ -18,6 +19,7 @@ app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
+app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));

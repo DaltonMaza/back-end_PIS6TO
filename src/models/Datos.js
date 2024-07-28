@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema; //cambio
 
 const dataSchema = new mongoose.Schema({
   temperatura: {
