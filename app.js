@@ -7,7 +7,6 @@ var cors = require('cors');
 var routes = require('./src/routes/index.js');
 
 const connectDB = require('./src/bd/index.js');
-const cors = require('cors');
 
 connectDB();
 
