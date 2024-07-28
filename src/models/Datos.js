@@ -14,13 +14,13 @@ const dataSchema = new mongoose.Schema({
     required: true
   },
   timestamp: {
-    type: Date,
+    type: String, // Cambia el tipo a String para evitar conversión automática
     required: true
   },
   external_id: {
     type: String,
-    required: false, // Asegúrate de que no sea obligatorio si no es necesario
-    unique: false // Elimina la restricción de unicidad
+    required: false,
+    unique: false
   }
 });
 
