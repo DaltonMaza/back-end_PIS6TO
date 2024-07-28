@@ -17,13 +17,15 @@ module.exports = {
     return res.json(data);
   },
 
-  createData: async (req, res) => {
+  createData: async (mqdata) => {
     try {
-      const data = new Data(req.body);
+      console.log(mqdata);
+      const data = new Data(mqdata);
+      console.log(data);
       await data.save();
-      res.status(201).json(data);
+      return { status: 201, data };
     } catch (error) {
-      res.status(400).json({ status: 400, message: "Error al crear el dato", error });
+      return { status: 400, error: "Error al crear el dato", details: error };
     }
   },
 

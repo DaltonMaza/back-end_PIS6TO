@@ -1,26 +1,29 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+const mongoose = require('mongoose');
 
-const dataSchema = new Schema(
-  {
-    humidity: {
-      type: String,
-      required: true,
-    },
-    temperature: {
-      type: String,
-      required: true,
-    },
-    timestamp: {
-      type: Date,
-      required: true,
-    },
+const dataSchema = new mongoose.Schema({
+  temperatura: {
+    type: Number,
+    required: true
   },
-  {
-    timestamps: true,
+  humedad: {
+    type: Number,
+    required: true
+  },
+  co2: {
+    type: Number,
+    required: true
+  },
+  timestamp: {
+    type: Date,
+    required: true
+  },
+  external_id: {
+    type: String,
+    required: false, // Asegúrate de que no sea obligatorio si no es necesario
+    unique: false // Elimina la restricción de unicidad
   }
-);
+});
 
-const Data = mongoose.model("Data", dataSchema);
+const Data = mongoose.model('Data', dataSchema);
 
 module.exports = Data;
