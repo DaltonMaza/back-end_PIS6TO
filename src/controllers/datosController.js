@@ -2,9 +2,9 @@ const Data = require("../models/Datos");
 
 module.exports = {
   getAllData: async (req, res) => {
-    const { skip = 0, limit = 10, ...where } = req.query;
-    const allData = await Data.find(where).skip(skip).limit(limit);
-    const numberData = await Data.countDocuments(where);
+    
+    const allData = await Data.find();
+    const numberData = await Data.countDocuments();
     res.json({ numberData, allData });
   },
 
