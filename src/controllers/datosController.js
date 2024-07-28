@@ -17,18 +17,60 @@ module.exports = {
     return res.json(data);
   },
 
-  createData: async (mqdata) => {
+  createData : async (mqdata) => {
     try {
-      console.log(mqdata);
+      console.log('Datos recibidos:', mqdata);
       const data = new Data(mqdata);
-      console.log(data);
-      await data.save();
-      res.status(201).json(data);
+      console.log('Objeto Data creado:', data);
+      const savedData = await data.save();
+      console.log('Datos guardados exitosamente:', savedData);
+      return savedData;
     } catch (error) {
-      res.status(400).json({ status: 400, message: "Error al crear el dato", error });
+      console.error('Error al guardar los datos:', error);
+      throw error; // Re-lanzar el error para manejarlo en el nivel superior si es necesario
     }
   },
+  exportData: async (req, res) => {
+    try {
+      const { startDate, endDate } = req.body;
 
+      if (!startDate || !endDate) {
+        return res.status(400).json({ error: 'startDate y endDate se requieren ' });
+      }
+
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      const allData = await Data.find({
+        createdAt: { $gte: start, $lte: end }
+      });
+
+      // Preparar datos para el archivo Excel
+      const dataToExport = allData.map(data => ({
+        // Suponiendo que tu esquema de Data tiene estas propiedades
+        id: data._id,
+        name: data.name,
+        value: data.value,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt
+      }));
+
+      // Crear un nuevo libro de trabajo y una hoja de trabajo
+      const workbook = xlsx.utils.book_new();
+      const worksheet = xlsx.utils.json_to_sheet(dataToExport);
+      xlsx.utils.book_append_sheet(workbook, worksheet, 'Data');
+
+      // Escribir el archivo a un buffer
+      const buffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'buffer' });
+
+      // Enviar el archivo al cliente
+      res.setHeader('Content-Disposition', 'attachment; filename=data.xlsx');
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.send(buffer);
+    } catch (error) {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
   updateData: async (req, res) => {
     const { id } = req.params;
     try {

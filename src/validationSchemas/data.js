@@ -23,5 +23,17 @@ const editDataSchema = Joi.object({
     "*": "El campo timestamp debe ser una fecha válida",
   }),
 });
+const exportDataSchema = Joi.object({
+  startDate: Joi.date().iso().required().messages({
+    "date.base": "El campo startDate debe ser una fecha válida",
+    "date.format": "El campo startDate debe estar en formato ISO",
+    "any.required": "El campo startDate es obligatorio",
+  }),
+  endDate: Joi.date().iso().required().messages({
+    "date.base": "El campo endDate debe ser una fecha válida",
+    "date.format": "El campo endDate debe estar en formato ISO",
+    "any.required": "El campo endDate es obligatorio",
+  }),
+});
 
-module.exports = { createDataSchema, editDataSchema };
+module.exports = { createDataSchema, editDataSchema, exportDataSchema};

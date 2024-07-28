@@ -3,11 +3,15 @@ const Schema = mongoose.Schema;
 
 const dataSchema = new Schema(
   {
-    humidity: {
+    temperatura: {
       type: String,
       required: true,
     },
-    temperature: {
+    humedad: {
+      type: String,
+      required: true,
+    },
+    co2: {
       type: String,
       required: true,
     },

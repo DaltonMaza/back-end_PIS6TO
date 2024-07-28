@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 var dataController = require("../controllers/datosController");
 const isLoggedIn = require("../policies/isLoggedIn");
-const { createDataSchema, editDataSchema } = require("../validationSchemas/data");
+const { createDataSchema, editDataSchema, exportDataSchema} = require("../validationSchemas/data");
 const middleware = require("../middlewares");
 
 /**
@@ -31,6 +31,17 @@ router.post(
   dataController.createData
 );
 
+/**
+ * @route POST /
+ * @desc Exportar Datos
+ * @access Logged
+ */
+router.post(
+  "/export",
+  //isLoggedIn,
+  middleware.validateRequestBody(exportDataSchema),
+  dataController.exportData
+);
 /**
  * @route PUT /:id
  * @desc Actualizar dato por id
