@@ -55,7 +55,6 @@ module.exports = {
     }
   },
 };
-const Data = require("../models/Datos");
 
 module.exports = {
   getAllData: async (req, res) => {
