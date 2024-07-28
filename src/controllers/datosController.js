@@ -1,5 +1,5 @@
 const Data = require("../models/Datos");
-
+const xlsx = require('xlsx');
 module.exports = {
   getAllData: async (req, res) => {
     const { skip = 0, limit = 10, ...where } = req.query;
@@ -96,19 +96,23 @@ module.exports = {
 
       const start = new Date(startDate);
       const end = new Date(endDate);
-
+      console.log(start.toISOString());
+      console.log(end.toISOString());
       const allData = await Data.find({
-        createdAt: { $gte: start, $lte: end }
+        "timestamp": { $gte: start.toISOString(), $lte: end.toISOString() }
       });
+      if (!allData.length) {
+        return res.status(404).json({ error: 'No data found for the given date range' });
+      }
+
+      
 
       // Preparar datos para el archivo Excel
       const dataToExport = allData.map(data => ({
-        // Suponiendo que tu esquema de Data tiene estas propiedades
-        id: data._id,
-        name: data.name,
-        value: data.value,
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt
+        temperatura: data.temperatura,
+        humedad: data.humedad,
+        co2: data.co2,
+        timestamp: data.timestamp
       }));
 
       // Crear un nuevo libro de trabajo y una hoja de trabajo
@@ -125,6 +129,7 @@ module.exports = {
       res.send(buffer);
     } catch (error) {
       res.status(500).json({ error: 'Internal Server Error' });
+      console.log(error);
     }
   },
   updateData: async (req, res) => {

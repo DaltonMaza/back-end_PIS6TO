@@ -49,5 +49,14 @@ router.put(
  * @access Logged
  */
 router.delete("/:id", isLoggedIn, dataController.deleteData);
-
+/**
+ * @route POST /
+ * @desc Exportar datos del sensor a un archivo xlxs
+ * @access Public
+ */
+router.post(
+  "/export",
+  //middleware.validateRequestBody(editDataSchema),
+  dataController.exportData
+);
 module.exports = router;
