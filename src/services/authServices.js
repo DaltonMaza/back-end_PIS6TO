@@ -3,7 +3,7 @@ const InvalidToken = require("../errors/InvalidToken");
 const ValidationError = require("../errors/ValidationError");
 const { generateUrlFriendlyToken } = require("../helpers");
 const Account = require("../models/Account");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 const login = async (email, password) => {
     const account = await Account.findOne({ email });
