@@ -5,6 +5,7 @@ const { tokenValidation } = require("../helpers/validateToken");
 const { generateUrlFriendlyToken } = require("../helpers");
 const Account = require("../models/Account");
 const bcrypt = require("bcrypt");
+const Role = require("../models/Role");
 // const transporter = require("../config/emailConfig");
 module.exports = {
     loginUser: async (req, res) => {
@@ -24,7 +25,10 @@ module.exports = {
         if (!compare) {
             return res.json({ status: 401, message: "Credenciales incorrectas" });
         }
-        const payload = { id: account.id };
+
+        const roleName = await Role.findOne({ _id: account.role });
+
+        const payload = { id: account.id, role: roleName.name };
         const token = await generateToken(payload);
 
         return res.json({ account, token });
