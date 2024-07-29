@@ -42,7 +42,7 @@ const accountSchema = new Schema(
       type: Date,
       required: false,
     },
-    rol: {
+    role: {
       type: Schema.Types.ObjectId,
       ref: "Rol",
       required: true,

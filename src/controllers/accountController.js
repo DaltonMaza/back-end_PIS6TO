@@ -39,28 +39,20 @@ module.exports = {
   },
 
   createCuenta: async (req, res) => {
-    // const cuenta = await cuentaService.createCuenta(req.body);
-    const cuentaExist = await Cuenta.findOne({ email: req.body.email });
-    const hashedPassword = await hashPassword(req.body.password);
-    req.body.password = hashedPassword;
-
-    if (cuentaExist) {
-      return res.json({ status: 400, message: "La cuenta ya existe" });
+    if (req.body.role == null) {
+      const rolUsuario = await Role.findOne({ name: "Usuario" });
+      req.body.role = rolUsuario._id;
+    }else if(req.body.role == 'Analista'){
+      const rolUsuario = await Role.findOne({ name: req.body.role });
+      req.body.role = rolUsuario._id;
+    }else if(req.body.role == 'Administrador'){
+      const rolUsuario = await Role.findOne({ name: req.body.role });
+      req.body.role = rolUsuario._id;
+    }else {
+      return res.json({ status: 400, message: "El rol no existe"});
     }
 
-    var cuenta;
-
-    if (req.body.rol != null) {
-      cuenta = await Cuenta.create({
-        ...req.body,
-      });
-    }else{
-      const rolUsuario = Role.findOne({ name: "Usuario" });
-      console.log(rolUsuario); //que info devuelve?
-      // req.body.rol = rolUsuario;
-    }
-
-
+    const cuenta = await cuentaService.createCuenta(req.body);
     return res.json(cuenta);
   },
 
