@@ -39,10 +39,11 @@ module.exports = {
   },
 
   createCuenta: async (req, res) => {
-    if (req.body.role == null) {
-      const rolUsuario = await Role.findOne({ name: "Usuario" });
-      req.body.role = rolUsuario._id;
-    }else if(req.body.role == 'Analista'){
+    // if (req.body.role == null) {
+    //   const rolUsuario = await Role.findOne({ name: "Usuario" });
+    //   req.body.role = rolUsuario._id;
+    // }else 
+    if(req.body.role == 'Analista'){
       const rolUsuario = await Role.findOne({ name: req.body.role });
       req.body.role = rolUsuario._id;
     }else if(req.body.role == 'Administrador'){
