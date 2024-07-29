@@ -27,7 +27,7 @@ app.use('/', routes);
 
 require('./src/middlewares/mqtt.js');
 
-// Capturar 404 y redirigir al manejador de errores
+//Capturar 404 y redirigir al manejador de errores
 app.use(function(req, res, next) {
   next(createError(404));
 });
