@@ -10,7 +10,14 @@ const middleware = require("../middlewares");
  * @desc Obtener todos los datos
  * @access Public
  */
-router.get("/", dataController.getAllData);
+router.get("/all", dataController.getAllData);
+
+/**
+ * @route GET /
+ * @desc Obtener todos los datos con paginacion
+ * @access Public
+ */
+router.get("/", dataController.getData);
 
 /**
  * @route GET /:id

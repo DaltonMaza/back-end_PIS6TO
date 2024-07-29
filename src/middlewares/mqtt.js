@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Data = require('../models/Datos'); 
 const Node = require('../models/Node'); 
 const dataController = require('../controllers/datosController');
+const weatherStateService = require('../services/weatherStateService');
 
 const mqttBrokerUrl = 'mqtt://172.168.129.50';
 
@@ -41,8 +42,10 @@ mqttClient.on('message', async (topic, message) => {
         data.external_id = new mongoose.Types.ObjectId().toString();
       }
       const result = await dataController.createData(data);
+      const resultState = await weatherStateService.createState(data.temperatura, data.humedad, data.co2);
+      console.log(resultState);
       if (result.status === 201) {
-        console.log('Datos guardados exitosamente:', result.data);
+        console.log('Datos guardados exitosamente:', result);
       } else {
         console.error('Error al crear el dato:', result);
       }
