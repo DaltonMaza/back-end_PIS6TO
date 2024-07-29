@@ -3,9 +3,11 @@ const xlsx = require('xlsx');
 module.exports = {
   getAllData: async (req, res) => {
     const { skip = 0, limit = 10, ...where } = req.query;
-    const allData = await Data.find(where).skip(skip).limit(limit);
-    const numberData = await Data.countDocuments(where);
-    res.json({ numberData, allData });
+    // const allData = await Data.find(where).skip(skip).limit(limit);
+    const allData = await Data.where({});
+    // const numberData = await Data.countDocuments(where);
+    // res.json({ numberData, allData });
+    return res.status(200).json({ status: 200, message: "OK", allData });
   },
 
   getDataById: async (req, res) => {
@@ -59,7 +61,16 @@ module.exports = {
 module.exports = {
   getAllData: async (req, res) => {
     const { skip = 0, limit = 10, ...where } = req.query;
-    const allData = await Data.find(where).skip(skip).limit(limit);
+    // const allData = await Data.find(where).skip(skip).limit(limit);
+    const allData = await Data.where({});
+    // const numberData = await Data.countDocuments(where);
+    // res.json({ numberData, allData });
+    return res.status(200).json({ status: 200, message: "OK", allData });
+  },
+
+  getData: async (req, res) => {
+    const { skip = 0, limit = 10, ...where } = req.query;
+    const allData = await Data.find(where).sort({ _id: -1 }).skip(skip).limit(limit);
     const numberData = await Data.countDocuments(where);
     res.json({ numberData, allData });
   },
@@ -80,7 +91,7 @@ module.exports = {
       console.log('Objeto Data creado:', data);
       const savedData = await data.save();
       console.log('Datos guardados exitosamente:', savedData);
-      return savedData;
+      return { status: 201, savedData };
     } catch (error) {
       console.error('Error al guardar los datos:', error);
       throw error; // Re-lanzar el error para manejarlo en el nivel superior si es necesario
@@ -171,12 +182,12 @@ module.exports = {
         return res.status(400).json({ status: 400, message: "ERROR", data: 'Formato de Fecha Incorrecto, Formato DD/MM/YYYY' });
       }
 
-      const [_, day, month, year ] = dateMatch;
+      const [_, day, month, year] = dateMatch;
       const dateFormatted = `${year}-${month}-${day}`;
 
       var startDate = new Date(`${dateFormatted}T00:00:00Z`);
 
-      if(startDate == 'Invalid Date'){
+      if (startDate == 'Invalid Date') {
         return res.status(400).json({ status: 400, message: "ERROR", data: 'Fecha Incorrecta' });
       }
 
@@ -192,13 +203,13 @@ module.exports = {
 
       data = await Data.find(query).lean();
 
-      if(data.length == 0){
+      if (data.length == 0) {
         return res.status(200).json({ status: 200, message: "OK", data: 'No se encontraron datos' });
-      }      
-    }else{
+      }
+    } else {
       data = await Data.where({});
 
-      if(data.length == 0){
+      if (data.length == 0) {
         return res.status(200).json({ status: 200, message: "OK", data: 'No se encontraron datos' });
       }
     }
