@@ -73,7 +73,7 @@ module.exports = {
     return res.json(data);
   },
 
-  createData : async (mqdata) => {
+  createData: async (mqdata) => {
     try {
       console.log('Datos recibidos:', mqdata);
       const data = new Data(mqdata);
@@ -105,7 +105,7 @@ module.exports = {
         return res.status(404).json({ error: 'No data found for the given date range' });
       }
 
-      
+
 
       // Preparar datos para el archivo Excel
       const dataToExport = allData.map(data => ({
@@ -156,5 +156,68 @@ module.exports = {
     } catch (error) {
       res.status(400).json({ status: 400, message: "Error al eliminar el dato", error });
     }
+  },
+
+  chatbot: async (req, res) => {
+    const { message, keywords, fecha } = req.body;
+
+    var data = null;
+
+    if (fecha != undefined) {
+      const dateRegex = /(\d{2})\/(\d{2})\/(\d{4})/;
+      const dateMatch = fecha.match(dateRegex);
+
+      if (!dateMatch) {
+        return res.status(400).json({ status: 400, message: "ERROR", data: 'Formato de Fecha Incorrecto, Formato DD/MM/YYYY' });
+      }
+
+      const [_, day, month, year ] = dateMatch;
+      const dateFormatted = `${year}-${month}-${day}`;
+
+      var startDate = new Date(`${dateFormatted}T00:00:00Z`);
+
+      if(startDate == 'Invalid Date'){
+        return res.status(400).json({ status: 400, message: "ERROR", data: 'Fecha Incorrecta' });
+      }
+
+      startDate = `${dateFormatted}T00:00:00`;
+      const endDate = `${dateFormatted}T23:59:59`;
+
+      const query = {
+        timestamp: {
+          $gte: startDate,
+          $lt: endDate,
+        }
+      };
+
+      data = await Data.find(query).lean();
+
+      if(data.length == 0){
+        return res.status(200).json({ status: 200, message: "OK", data: 'No se encontraron datos' });
+      }      
+    }else{
+      data = await Data.where({});
+
+      if(data.length == 0){
+        return res.status(200).json({ status: 200, message: "OK", data: 'No se encontraron datos' });
+      }
+    }
+
+    const lastRow = data[data.length - 1];
+    const response = [];
+
+    keywords.map((keyword) => {
+      if (keyword == "temperatura") {
+        response.push(keyword + ": " + lastRow.temperatura);
+      }
+      if (keyword == "humedad") {
+        response.push(keyword + ": " + lastRow.humedad);
+      }
+      if (keyword == "dióxido de carbono" || keyword == "dioxido de carbono" || keyword == "co2") {
+        response.push(keyword + ": " + lastRow.co2);
+      }
+    });
+
+    return res.status(200).json({ status: 200, message: "OK", data: response });
   },
 };

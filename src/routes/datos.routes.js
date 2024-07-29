@@ -59,4 +59,15 @@ router.post(
   //middleware.validateRequestBody(editDataSchema),
   dataController.exportData
 );
+
+/**
+ * @route POST /
+ * @desc Datos solicitados por chatbot
+ * @access Public
+ */
+router.post(
+  "/chatbot",
+  dataController.chatbot
+);
+
 module.exports = router;
