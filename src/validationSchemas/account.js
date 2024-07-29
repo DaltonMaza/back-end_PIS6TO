@@ -14,7 +14,7 @@ const createAccountSchema = Joi.object({
   password: Joi.string().required().min(5).max(30).messages({
     "*": "El campo contraseña es requerido y debe tener entre 5 y 30 caracteres",
   }),
-  role: Joi.string().optional(),
+  role: Joi.string().required(),
   state: Joi.string()
     .valid("ACTIVA", "BLOQUEADA", "INACTIVA")
     .optional()
