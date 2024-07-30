@@ -4,9 +4,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
-var routes = require('./src/routes/index.js');
+var routes = require('./src/routes/index');
 
 const connectDB = require('./src/bd/index.js');
+const placaRoutes = require('./src/routes/Placa.js');
 
 connectDB();
 
@@ -27,10 +28,14 @@ app.use('/', routes);
 
 require('./src/middlewares/mqtt.js');
 
+app.use(placaRoutes);
+
 // Capturar 404 y redirigir al manejador de errores
 app.use(function(req, res, next) {
   next(createError(404));
 });
+
+
 
 // Manejador de errores
 app.use(function(err, req, res, next) {
