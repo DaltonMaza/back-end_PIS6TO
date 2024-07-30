@@ -6,6 +6,7 @@ const { generateUrlFriendlyToken } = require("../helpers");
 const Account = require("../models/Account");
 const bcrypt = require("bcrypt");
 const Role = require("../models/Role");
+const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
     service: 'Gmail', // O el servicio que uses
