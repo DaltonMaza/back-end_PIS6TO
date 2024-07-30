@@ -74,14 +74,13 @@ module.exports = {
         account.tokenExpiresAt = new Date(Date.now() + 3 * 60 * 60 * 1000); // Corrección del tiempo de expiración
         await account.save();
 
-        console.log(token);
         const mailOptions = {
-            from: 'tu-email@gmail.com', // Correo del servidor
+            // from: 'tu-email@gmail.com', // Correo del servidor
             to: email,
             subject: "Recuperación de contraseña",
             html: `
                 <b>Haga clic en el siguiente enlace o péguelo en su navegador web para la recuperación de contraseña</b>
-                <a href="http://localhost:3000/nueva_cont/${token}">http://localhost:3000/nueva_cont/${token}</a>
+                <a href="${FRONT_URL}/nueva_cont/${token}">${FRONT_URL}/nueva_cont/${token}</a>
             `,
         };
         await transporter.sendMail(mailOptions);
@@ -92,19 +91,16 @@ module.exports = {
     },
 
     recoverPassword: async (req, res, next) => {
-        console.log("RecoverPassword method called"); // Agregado para verificar ejecución
         const { token } = req.params;
         const { password } = req.body;
-        console.log("me cago en todo");
     
         if (!password) {
             return res.json({ status: 400, message: "La contraseña es requerida" });
         }
     
-        console.log("me cago en todo2222222");
         try {
             const account = await Account.findOne({ token });
-            console.log("Account found:", account); // Agregado para verificar el resultado
+            console.log("Account found:", account);
             if (!account) {
                 return res.json({ status: 400, message: "Token inválido" });
             }
@@ -113,10 +109,9 @@ module.exports = {
                 return res.json({ status: 401, message: "Token ha expirado" });
             }
     
-            // Hashear la nueva contraseña
             account.password = await hashPassword(password);
             const newUser = await account.save();
-            console.log("New user saved:", newUser); // Agregado para verificar el resultado
+            console.log("New user saved:", newUser);
     
             if (!newUser) {
                 return next({
@@ -129,8 +124,8 @@ module.exports = {
                 message: "Contraseña actualizada exitosamente",
             });
         } catch (error) {
-            console.error("Error en recoverPassword:", error); // Agregado para capturar errores
-            next(error); // Pasa el error al middleware de manejo de errores
+            console.error("Error en recoverPassword:", error);
+            next(error);
         }
-    },   
+    },      
 };
