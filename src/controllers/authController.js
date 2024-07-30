@@ -6,8 +6,18 @@ const { generateUrlFriendlyToken } = require("../helpers");
 const Account = require("../models/Account");
 const bcrypt = require("bcrypt");
 const Role = require("../models/Role");
+
+const transporter = nodemailer.createTransport({
+    service: 'Gmail', // O el servicio que uses
+    auth: {
+        user: 'ronald.cuenca@unl.edu.ec', // Correo del servidor
+        pass: 'tedquieromucho' // Contraseña del servidor
+    }
+});
 // const transporter = require("../config/emailConfig");
 module.exports = {
+    
+
     loginUser: async (req, res) => {
         const { email, password } = req.body;
         // const account = await authService.login(email, password);
@@ -52,7 +62,6 @@ module.exports = {
 
     generatePasswordRecoveryToken: async (req, res, next) => {
         const { email } = req.body;
-        // const token = await authService.generatePasswordRecoveryToken(email);
         const account = await Account.findOne({ email });
 
         if (!account) {
@@ -61,51 +70,66 @@ module.exports = {
 
         const token = generateUrlFriendlyToken();
         account.token = token;
-        account.tokenExpiresAt = new Date(Date.now() + 3 * 60 * 60 * 100);
+        account.tokenExpiresAt = new Date(Date.now() + 3 * 60 * 60 * 1000); // Corrección del tiempo de expiración
         await account.save();
 
         console.log(token);
         const mailOptions = {
-            form: transporter.options.auth.user,
+            from: 'tu-email@gmail.com', // Correo del servidor
             to: email,
-            subject: "Recuperacion de contraseña",
+            subject: "Recuperación de contraseña",
             html: `
-       <b>Haga click en el siguiente enlace o pégelo en su navegador web para la recuperación de contraseña</b>
-       <a href="http://localhost:3000/auth/recovery-password/${token}">http://localhost:3000/recovery-password/${token}</a>
-      `,
+                <b>Haga clic en el siguiente enlace o péguelo en su navegador web para la recuperación de contraseña</b>
+                <a href="http://localhost:3000/nueva_cont/${token}">http://localhost:3000/nueva_cont/${token}</a>
+            `,
         };
         await transporter.sendMail(mailOptions);
 
         return res.json({
-            message: "El link de acceso se le envio a su email de registro",
+            message: "El link de acceso se le envió a su email de registro",
         });
     },
 
     recoverPassword: async (req, res, next) => {
+        console.log("RecoverPassword method called"); // Agregado para verificar ejecución
         const { token } = req.params;
         const { password } = req.body;
-        // const account = await authService.validateTokenAccount(tokenA);
-        const account = await Account.findOne({ token });
-        if (!account) {
-            return res.json({ status: 400, message: "Token invalido" });
+        console.log("me cago en todo");
+    
+        if (!password) {
+            return res.json({ status: 400, message: "La contraseña es requerida" });
         }
-
-        if (Date.now() > account.tokenExpiresAt) {
-            return res.json({ status: 401, message: "Token a expirado" });
-        }
-
-        account.password = await hashPassword(password);
-        const newUser = await account.save();
-
-        if (!newUser) {
-            return next({
-                status: 400,
-                message: "No se ha podido recuperar la contraseña, intente más tarde",
+    
+        console.log("me cago en todo2222222");
+        try {
+            const account = await Account.findOne({ token });
+            console.log("Account found:", account); // Agregado para verificar el resultado
+            if (!account) {
+                return res.json({ status: 400, message: "Token inválido" });
+            }
+    
+            if (Date.now() > account.tokenExpiresAt) {
+                return res.json({ status: 401, message: "Token ha expirado" });
+            }
+    
+            // Hashear la nueva contraseña
+            account.password = await hashPassword(password);
+            const newUser = await account.save();
+            console.log("New user saved:", newUser); // Agregado para verificar el resultado
+    
+            if (!newUser) {
+                return next({
+                    status: 400,
+                    message: "No se ha podido recuperar la contraseña, intente más tarde",
+                });
+            }
+    
+            res.json({
+                message: "Contraseña actualizada exitosamente",
             });
+        } catch (error) {
+            console.error("Error en recoverPassword:", error); // Agregado para capturar errores
+            next(error); // Pasa el error al middleware de manejo de errores
         }
-
-        res.json({
-            message: "Contraseña actualizada exitosamente",
-        });
-    },
+    },   
 };
