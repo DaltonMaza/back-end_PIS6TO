@@ -3,7 +3,7 @@ const router = express.Router();
 const Placa = require('../models/Placa');
 
 // Ruta para obtener todas las placas
-router.get('/api/Placa', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const placas = await Placa.find(); // Encuentra todas las placas
     res.status(200).json(placas);
@@ -14,7 +14,7 @@ router.get('/api/Placa', async (req, res) => {
 });
 
 // Ruta para crear una nueva placa
-router.post('/api/Placa', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { identificador, estado } = req.body;
 
