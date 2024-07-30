@@ -14,8 +14,8 @@ const middleware = require("../middlewares");
  *  @access Logged
  */
 
-router.get("/", isLoggedIn, cuentaController.getAllAcounts);
-
+//router.get("/", isLoggedIn, cuentaController.getAllAcounts);
+router.get("/", cuentaController.getAllAcounts);
 /**
  * @route GET /:id
  * @desc Obtener cuenta por id
@@ -42,8 +42,8 @@ router.post(
  */
 
 router.put(
-  "/:external",
-  isLoggedIn,
+  "/:id",
+  //isLoggedIn,
   middleware.validateRequestBody(editAccountSchema),
   cuentaController.updateCuenta
 );

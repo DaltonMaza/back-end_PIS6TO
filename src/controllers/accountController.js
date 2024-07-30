@@ -23,19 +23,33 @@ module.exports = {
   },
 
   updateCuenta: async (req, res, next) => {
-    const external_id = req.params.external;
-    let cuenta = await Cuenta.findOne({ external_id });
-    if (!cuenta) {
-      return res.json({ status: 400, message: "La cuenta no fue encontrada" });
+    try {
+      const external = req.params.external;
+      console.log(external);
+  
+      let cuenta = await Cuenta.findOne({ external });
+      console.log(cuenta);
+  
+      if (!cuenta) {
+        return res.status(400).json({ status: 400, message: "La cuenta no fue encontrada" });
+      }
+  
+      if (req.body.password) {
+        req.body.password = await hashPassword(req.body.password);
+      }
+  
+      // No generar un nuevo external_id a menos que sea necesario
+      // req.body.external_id = uuidv4(); // Esto puede no ser necesario
+  
+      cuenta = await Cuenta.findOneAndUpdate({ external }, req.body, {
+        new: true,
+      });
+  
+      return res.json(cuenta);
+    } catch (error) {
+      console.error('Error al actualizar la cuenta:', error);
+      return res.status(500).json({ status: 500, message: "Error interno del servidor" });
     }
-    if (req.body.password) {
-      req.body.password = await hashPassword(req.body.password);
-    }
-    req.body.external_id = uuidv4();
-    cuenta = await Cuenta.findOneAndUpdate({ external_id }, req.body, {
-      new: true,
-    });
-    return res.json(cuenta);
   },
 
   createCuenta: async (req, res) => {
