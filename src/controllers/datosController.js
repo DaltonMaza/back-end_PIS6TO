@@ -170,7 +170,10 @@ module.exports = {
   },
 
   chatbot: async (req, res) => {
+    const saludo = "Hola, ";
     const { message, keywords, fecha } = req.body;
+
+    var respuesta = saludo;
 
     var data = null;
 
@@ -179,7 +182,8 @@ module.exports = {
       const dateMatch = fecha.match(dateRegex);
 
       if (!dateMatch) {
-        return res.status(400).json({ status: 400, message: "ERROR", data: 'Formato de Fecha Incorrecto, Formato DD/MM/YYYY' });
+        respuesta = respuesta + "lo lamento, el formato de fecha aceptado es DD/MM/YYYY, considera modificar y volver a enviar tu mensaje por favor.";
+        return res.status(200).json({ status: 200, message: "ERROR", data: respuesta });
       }
 
       const [_, day, month, year] = dateMatch;
@@ -188,7 +192,8 @@ module.exports = {
       var startDate = new Date(`${dateFormatted}T00:00:00Z`);
 
       if (startDate == 'Invalid Date') {
-        return res.status(400).json({ status: 400, message: "ERROR", data: 'Fecha Incorrecta' });
+        respuesta = respuesta + "la fecha que estás indicando es incorrecta, considera modificar y volver a enviar tu mensaje por favor.";
+        return res.status(200).json({ status: 200, message: "ERROR", data: respuesta });
       }
 
       startDate = `${dateFormatted}T00:00:00`;
@@ -204,31 +209,41 @@ module.exports = {
       data = await Data.find(query).lean();
 
       if (data.length == 0) {
-        return res.status(200).json({ status: 200, message: "OK", data: 'No se encontraron datos' });
+        respuesta = respuesta + "lo lamento, no he encontrado datos registrados en la fecha indicada.";
+        return res.status(200).json({ status: 200, message: "OK", data: respuesta });
       }
     } else {
-      data = await Data.where({});
+      data = await Data.find({}).sort({ _id: -1 }).skip(0).limit(10);
 
       if (data.length == 0) {
-        return res.status(200).json({ status: 200, message: "OK", data: 'No se encontraron datos' });
+        respuesta = respuesta + "lo lamento, no se han encontrado datos registrados."
+        return res.status(200).json({ status: 200, message: "OK", data: respuesta });
       }
     }
 
-    const lastRow = data[data.length - 1];
-    const response = [];
+    const lastRow = data[0];
+    var keywordsB = false;
 
     keywords.map((keyword) => {
+      keywordsB = true;
+      if (keyword == "fecha") {
+        respuesta = respuesta + "considerando la fecha " + fecha + ", ";
+      }
       if (keyword == "temperatura") {
-        response.push(keyword + ": " + lastRow.temperatura);
+        respuesta = respuesta + "la temperatura almacenada es: " + lastRow.temperatura + "°C";
       }
       if (keyword == "humedad") {
-        response.push(keyword + ": " + lastRow.humedad);
+        respuesta = respuesta + "la humedad almacenada es: " + lastRow.humedad + "%";
       }
       if (keyword == "dióxido de carbono" || keyword == "dioxido de carbono" || keyword == "co2") {
-        response.push(keyword + ": " + lastRow.co2);
+        respuesta = respuesta + "el CO2 almacenado es: " + lastRow.co2 + "ppm";
       }
     });
 
-    return res.status(200).json({ status: 200, message: "OK", data: response });
+    if(!keywordsB){
+      respuesta = respuesta + "este chatbot puede responder tus solicitudes si indicas el dato que deseas recuperar (temperatura, humedad, dióxido de carbono). Si buscas un dato de una fecha específica adicionalmente indica \"fecha DD/MM/YYYY\"";
+    }
+
+    return res.status(200).json({ status: 200, message: "OK", data: respuesta });
   },
 };
