@@ -129,5 +129,5 @@ module.exports = {
             console.error("Error en recoverPassword:", error);
             next(error);
         }
-    },   
+    },      
 };
